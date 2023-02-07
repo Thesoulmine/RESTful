@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "Last name can not be empty")
     private String lastName;
 
-    private int age;
+    private Integer age;
 
     @NotEmpty(message = "Please select at least 1 role")
     @ManyToMany(fetch = FetchType.LAZY)
@@ -77,11 +77,11 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
