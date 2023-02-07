@@ -32,13 +32,13 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional
     @Override
-    public List<Role> convertRolesToList(User user, String[] roles) {
+    public void setRolesToUser(User user, String[] roles) {
         List<Role> rolesList = new ArrayList<>();
         if (roles != null) {
             for (String role : roles) {
                 rolesList.add(findRoleByName(role));
             }
         }
-        return rolesList;
+        user.setRoles(rolesList);
     }
 }

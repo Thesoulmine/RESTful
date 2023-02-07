@@ -10,9 +10,7 @@ public interface RoleService {
 
     List<Role> getRolesList();
 
-    @Transactional
     Role findRoleByName(String role);
 
-    @Transactional
-    List<Role> convertRolesToList(User user, String[] roles);
+    void setRolesToUser(User user, String[] roles);
 }

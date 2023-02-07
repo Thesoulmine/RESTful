@@ -42,7 +42,7 @@ public class AdminController {
     @PutMapping("/edit")
     public String editUser(@ModelAttribute("user") User user,
                            @RequestParam(name = "allRoles", required = false) String[] roles) {
-        user.setRoles(roleService.convertRolesToList(user, roles));
+        roleService.setRolesToUser(user, roles);
         userService.updateUser(user);
         return "redirect:/admin";
     }
