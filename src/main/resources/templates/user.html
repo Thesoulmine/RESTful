@@ -9,9 +9,7 @@
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end" style="height: 50px">
     <div style="font-size: 22px ">
-        <span class="navbar-text font-weight-bold" style="color: white;" th:utext="${user.username}"></span>
-        <span class="navbar-text" style="color: white;">with roles:</span>
-        <span class="navbar-text" style="color: white;" th:utext="${#strings.replace(#strings.substring(user.roles, 1, #strings.length(user.roles) - 1), ',', '')}"></span>
+        <span class="navbar-text" style="color: white;" id="currentUser"></span>
     </div>
     <ul class="navbar-nav text-right ml-auto mr-1">
         <li class="nav-item">
@@ -48,15 +46,32 @@
                                         <th scope="col">Role</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td style="vertical-align: middle" th:utext="${user.id}"></td>
-                                        <td style="vertical-align: middle" th:utext="${user.firstName}"></td>
-                                        <td style="vertical-align: middle" th:utext="${user.lastName}"></td>
-                                        <td style="vertical-align: middle" th:utext="${user.age}"></td>
-                                        <td style="vertical-align: middle" th:utext="${user.username}"></td>
-                                        <td style="vertical-align: middle" th:text="${#strings.replace(#strings.substring(user.roles, 1, #strings.length(user.roles) - 1), ',', '')}"></td>
-                                    </tr>
+                                    <tbody id="currentUserTable">
+                                        <script>
+                                            function fillCurrentUserTable(currentUser) {
+                                                let li = `<tr>
+                                                    <td>${currentUser.id}</td>
+                                                    <td>${currentUser.firstName}</td>
+                                                    <td>${currentUser.lastName}</td>
+                                                    <td>${currentUser.age}</td>
+                                                    <td>${currentUser.username}</td>
+                                                    <td>${currentUser.roles.map(role => role.name).join(" ")}</td>
+                                                    </tr>`;
+                                                document.getElementById("currentUserTable").innerHTML = li;
+                                            }
+
+                                            async function fillCurrentUser() {
+                                                let response = await fetch("http://localhost:8080/api/users/current");
+                                                let commits = await response.json();
+                                                let li = `<b>${commits.username}</b> with roles ${commits.roles.map(role => role.name).join(" ")}`;
+                                                document.getElementById("currentUser").innerHTML = li;
+                                                fillCurrentUserTable(commits);
+                                            }
+
+                                            window.onload = function() {
+                                                fillCurrentUser()
+                                            };
+                                        </script>
                                     </tbody>
                                 </table>
                             </div>
@@ -66,6 +81,7 @@
             </div>
         </div>
     </div>
+<!--<script type="module" th:src="@{../static/user.js}"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 </body>

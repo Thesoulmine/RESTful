@@ -8,9 +8,7 @@
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end" style="height: 50px">
     <div style="font-size: 22px ">
-        <span class="navbar-text font-weight-bold" style="color: white;" th:utext="${currentUser.username}"></span>
-        <span class="navbar-text" style="color: white;">with roles:</span>
-        <span class="navbar-text" style="color: white;" th:utext="${#strings.replace(#strings.substring(currentUser.roles, 1, #strings.length(currentUser.roles) - 1), ',', '')}"></span>
+        <span class="navbar-text" style="color: white;" id="currentUser"></span>
     </div>
     <ul class="navbar-nav text-right ml-auto mr-1">
         <li class="nav-item">
@@ -59,6 +57,38 @@
                                         </tr>
                                         </thead>
                                         <tbody>
+                                        <script>
+                                            async function fillUsersTable(currentUser) {
+                                                let response = await fetch("http://localhost:8080/api/users");
+                                                let commits = await response.json();
+                                                console.log(currentUser);
+                                                let li = ``;
+                                                commits.forEach((user) => {
+                                                    li += `<tr>
+                                                        <td>${user.id}</td>
+                                                        <td>${user.firstName} </td>
+                                                        <td>${user.lastName}</td>
+                                                        <td>${user.age}</td>
+                                                        <td>${user.username}</td>
+                                                        <td>${user.roles.map(role => role.name).join(" ")}</td>
+                                                        </tr>`
+                                                });
+                                                console.log(li);
+                                                document.getElementById("usersTable").innerHTML = li;
+                                            }
+
+                                            async function fillCurrentUser() {
+                                                let response = await fetch("http://localhost:8080/api/users/current");
+                                                let commits = await response.json();
+                                                let li = `<b>${commits.username}</b> with roles ${commits.roles.map(role => role.name).join(" ")}`;
+                                                document.getElementById("currentUser").innerHTML = li;
+                                            }
+
+                                            window.onload = function() {
+                                                fillUsersTable();
+                                                fillCurrentUser();
+                                            };
+                                        </script>
                                         <tr th:each="user : ${users}">
                                             <td style="vertical-align: middle" th:utext="${user.id}"></td>
                                             <td style="vertical-align: middle" th:utext="${user.firstName}"></td>
