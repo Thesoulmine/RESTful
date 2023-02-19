@@ -58,41 +58,6 @@
                                         </tr>
                                         </thead>
                                         <tbody id="usersTable">
-                                        <script>
-                                            async function fillUsersTable() {
-                                                let response = await fetch("http://localhost:8080/api/users");
-                                                let commits = await response.json();
-                                                let li = ``;
-                                                commits.forEach((user) => {
-                                                    li += `<tr>
-                                                        <td>${user.id}</td>
-                                                        <td>${user.firstName} </td>
-                                                        <td>${user.lastName}</td>
-                                                        <td>${user.age}</td>
-                                                        <td>${user.username}</td>
-                                                        <td>${user.roles.map(role => role.name).join(" ")}</td>
-                                                        <td><button class="btn btn-info" type="button" data-toggle="modal" data-id="${user.id}"
-                                                        data-target="#userEdit">Edit</button></td>
-                                                        <td><button type="button" class="btn btn-danger" data-toggle="modal" data-id="${user.id}"
-                                                        data-target="#userDelete">Delete</button></td>
-                                                        </tr>`
-                                                });
-                                                document.getElementById("usersTable").innerHTML = li;
-                                            }
-
-                                            async function fillCurrentUser() {
-                                                let response = await fetch("http://localhost:8080/api/users/current");
-                                                let commits = await response.json();
-                                                let li = `<b>${commits.username}</b> with roles ${commits.roles.map(role => role.name).join(" ")}`;
-                                                document.getElementById("currentUser").innerHTML = li;
-                                            }
-
-                                            window.onload = function() {
-                                                fillUsersTable();
-                                                fillCurrentUser();
-                                                addRolesOptions();
-                                            };
-                                        </script>
                                         </tbody>
                                     </table>
                                     <div class="modal" id="userEdit" tabindex="-1" aria-labelledby="userEdut" aria-hidden="true">
@@ -139,71 +104,11 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditModal">Close</button>
-                                                    <button type="submit" class="btn btn-primary" id="editUser" onclick="editUser()">Edit</button>
+                                                    <button type="submit" class="btn btn-primary" id="editUser" onclick="updateUser()">Edit</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <script>
-                                        $(document).ready(() => {
-                                            $('#userEdit').on('show.bs.modal', function (event) {
-                                                let id = $(event.relatedTarget).attr("data-id")
-                                                fillUpdateForm(id);
-                                            })
-
-                                            $('#userEdit').on('hidden.bs.modal', function () {
-                                                document.getElementById('editForm').reset();
-                                                $(this).removeData();
-                                            })
-                                        })
-
-                                        async function fillUpdateForm(id) {
-                                            let response = await fetch(`http://localhost:8080/api/users/${id}`);
-                                            let commits = await response.json();
-                                            editForm.id.value = commits.id;
-                                            editForm.firstName.value = commits.firstName;
-                                            editForm.lastName.value = commits.lastName;
-                                            editForm.age.value = commits.age;
-                                            editForm.username.value = commits.username;
-                                            editForm.password.value = commits.password;
-                                            commits.roles.forEach(function (element) {
-                                                if (element.name === 'ADMIN') {
-                                                    editForm.roles.options[0].selected = true;
-                                                }
-                                                if (element.name === 'USER') {
-                                                    editForm.roles.options[1].selected = true;
-                                                }
-                                            });
-                                            // editForm.roles.value = commits.roles;
-                                            console.log(editForm.roles.value);
-                                            console.log(commits.roles);
-                                        }
-
-                                        async function editUser() {
-                                            let user = {
-                                                id: editForm.id.value,
-                                                firstName: editForm.firstName.value,
-                                                lastName: editForm.lastName.value,
-                                                age: editForm.age.value,
-                                                username: editForm.username.value,
-                                                password: editForm.password.value,
-                                                roles: Array.from(editForm.roles)
-                                                    .filter(option => option.selected)
-                                                    .map(option => JSON.parse(option.value))
-                                            };
-                                            let response = await fetch(`http://localhost:8080/api/users`, {
-                                                method: 'PUT',
-                                                headers: {
-                                                    'Content-Type': 'application/json'
-                                                },
-                                                body: JSON.stringify(user)
-                                            })
-                                            if (response.ok) {
-                                                document.getElementById('closeEditModal').click()
-                                                await fillUsersTable();
-                                            }
-                                        }
-                                    </script>
                                     <div class="modal" id="userDelete" tabindex="-1" aria-labelledby="userDelete" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -249,40 +154,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <script>
-                                        $(document).ready(() => {
-                                            $('#userDelete').on('show.bs.modal', function (event) {
-                                                let id = $(event.relatedTarget).attr("data-id")
-                                                fillDeleteForm(id);
-                                            })
-
-                                            $('#userDelete').on('hidden.bs.modal', function () {
-                                                document.getElementById('deleteForm').reset();
-                                                $(this).removeData();
-                                            })
-                                        })
-
-                                        async function fillDeleteForm(id) {
-                                            let response = await fetch(`http://localhost:8080/api/users/${id}`);
-                                            let commits = await response.json();
-                                            deleteForm.id.value = commits.id;
-                                            deleteForm.firstName.value = commits.firstName;
-                                            deleteForm.lastName.value = commits.lastName;
-                                            deleteForm.age.value = commits.age;
-                                            deleteForm.username.value = commits.username;
-                                            deleteForm.roles.value = commits.roles;
-                                        }
-
-                                        async function deleteUser() {
-                                            let response = await fetch(`http://localhost:8080/api/users/${deleteForm.id.value}`, {
-                                                method: 'DELETE'
-                                            })
-                                            if (response.ok) {
-                                                document.getElementById('closeDeleteModal').click()
-                                                await fillUsersTable();
-                                            }
-                                        }
-                                    </script>
                                 </div>
                             </div>
                         </div>
@@ -316,49 +187,9 @@
                                         <div class="form-group">
                                             <label class="font-weight-bold mb-0" style="font-size: 16px" for="addNewUserSelect">Role</label>
                                             <select multiple class="form-control" id="addNewUserSelect" name="roles" size="2" required>
-                                                <script>
-                                                    async function addRolesOptions() {
-                                                        let response = await fetch("http://localhost:8080/api/users/roles");
-                                                        let commits = await response.json();
-                                                        let li = ``;
-                                                        commits.forEach(element => {
-                                                            li += `<option value='{"id": ${element.id}, "name": "${element.name}"}'>${element.name}</option>`
-                                                        });
-                                                        document.getElementById("addNewUserSelect").innerHTML = li;
-                                                        document.getElementById("deleteUserRole").innerHTML = li;
-                                                        document.getElementById("editUserRole").innerHTML = li;
-                                                    }
-                                                </script>
                                             </select>
                                         </div>
                                         <button type="button" class="btn btn-success" onclick="addFormButton()">Add new user</button>
-                                        <script>
-                                            async function addFormButton() {
-                                                let user = {
-                                                    firstName: addForm.firstName.value,
-                                                    lastName: addForm.lastName.value,
-                                                    age: parseInt(addForm.age.value),
-                                                    username: addForm.username.value,
-                                                    password: addForm.password.value,
-                                                    roles: Array.from(addForm.roles)
-                                                        .filter(option => option.selected)
-                                                        .map(option => JSON.parse(option.value))
-                                                };
-                                                let response = await fetch("http://localhost:8080/api/users", {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: JSON.stringify(user)
-                                                });
-                                                let result = await response.json();
-                                                if (response.ok) {
-                                                    $('.nav-tabs a:first').tab('show');
-                                                    document.getElementById('addForm').reset();
-                                                    await fillUsersTable();
-                                                }
-                                            }
-                                        </script>
                                     </form>
                                 </div>
                             </div>
@@ -369,6 +200,7 @@
         </div>
     </div>
 </div>
+<script src="admin.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 </body>

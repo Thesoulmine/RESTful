@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,15 +36,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .disable()
                 .authorizeRequests()
                     .antMatchers("/").permitAll()
-                    .antMatchers("/api/**").permitAll()
-                    .antMatchers("/admin/**").hasAuthority("ADMIN")
+                    .antMatchers("/admin").hasAuthority("ADMIN")
                     .antMatchers("/user").hasAnyAuthority("USER", "ADMIN")
+                    .antMatchers(HttpMethod.GET,"/api/users/current").hasAnyAuthority("USER", "ADMIN")
+                    .antMatchers(HttpMethod.GET,"/api/users/roles").hasAnyAuthority("USER", "ADMIN")
+                    .antMatchers(HttpMethod.DELETE,"/api/users/{id}").hasAuthority("ADMIN")
+                    .antMatchers(HttpMethod.PUT,"/api/users").hasAuthority("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/api/users").hasAuthority("ADMIN")
+                    .antMatchers(HttpMethod.GET,"/api/users/{id}").hasAuthority("ADMIN")
+                    .antMatchers(HttpMethod.GET,"/api/users").hasAuthority("ADMIN")
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()
                     .loginPage("/")
                     .loginProcessingUrl("/login")
-                   // .failureUrl("/error")
                     .successHandler(successUserHandler)
                     .permitAll()
                 .and()
